@@ -4,12 +4,12 @@ from datetime import datetime
 from utils.api import response, error_response, validate_body
 from services.todo import create_todo, get_todos, update_todo, delete_todo
 
-todo_api = Blueprint('todo', __name__)
+todo_api = Blueprint('todo_api', __name__)
 
 
 @todo_api.route('/', methods=['POST'])
 def create():
-    body = request.get_json()
+    body = {'task': request.form['task']}
     status, missing_field = validate_body(body, ['task'])
     if not status:
         return error_response(f'{missing_field} is required')
@@ -35,7 +35,7 @@ def view():
 
 @todo_api.route('/<todo_id>', methods=['PUT'])
 def update(todo_id):
-    body = request.get_json()
+    body = {'done': True if request.form['done'] == "true" else False}
     try:
         todo_task = update_todo(todo_id, body)
         return response(True, 'Todo task updated successfully', todo_task)
