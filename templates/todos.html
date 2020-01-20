@@ -58,27 +58,35 @@
 
         $.ajax({ type: 'POST', url: '/api/todos', data: {'task': item}, success: function(data) {
             console.log(data);
-            todoListItem.append(`<li> <div class='form-check'><label class='form-check-label'><input class='checkbox' type='checkbox' />${data['data']['task']}<i class='input-helper'></i></label></div><i class='remove mdi mdi-close-circle-outline'></i> </li>`);
+            todoListItem.append(`<li> <div class='form-check'><label class='form-check-label'><input class='checkbox' type='checkbox' value="${data['data']['_id']}" />${data['data']['task']}<i class='input-helper'></i></label></div> <button class='remove mdi mdi-close-circle-outline' value="${data['data']['_id']}"></button> </li>`);
         todoListInput.val("");
             }, dataType: 'json'})
 
 
         });
 
-        todoListItem.on('change', '.checkbox', function() {
+        todoListItem.on('change', '.checkbox', function(e) {
+            var id = e.target.value;
         if ($(this).attr('checked')) {
-
-        $(this).removeAttr('checked');
+            $.ajax({type: 'PUT', url: `/api/todos/${id}`, data: {'done': false}, dataType: 'json', success: function(data) {
+                $(this).removeAttr('checked')
+                } });
         } else {
-        $(this).attr('checked', 'checked');
+            $.ajax({type: 'PUT', url: `/api/todos/${id}`, data: {'done': true}, dataType: 'json', success: function(data) {
+                $(this).attr('checked', 'checked');
+                } });
         }
 
         $(this).closest("li").toggleClass('completed');
 
         });
 
-        todoListItem.on('click', '.remove', function() {
-        $(this).parent().remove();
+        todoListItem.on('click', '.remove', function(e) {
+            var id = e.target.value;
+            {#$.ajax({type: 'DELETE', url: `/api/todos/${id}`, success: function(data) {#}
+            {#    $(this).parent().remove();#}
+            {#    } });#}
+
         });
 
         });
