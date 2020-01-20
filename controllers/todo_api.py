@@ -35,7 +35,7 @@ def view():
 
 @todo_api.route('/<todo_id>', methods=['PUT'])
 def update(todo_id):
-    body = request.get_json()
+    body = {'done': request.form['done']}
     try:
         todo_task = update_todo(todo_id, body)
         return response(True, 'Todo task updated successfully', todo_task)
