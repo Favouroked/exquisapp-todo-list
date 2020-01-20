@@ -41,7 +41,7 @@
             console.log(result);
             var tasks = result['data'];
             for (let data of tasks) {
-                todoListItem.append(`<li> <div class='form-check'><label class='form-check-label'><input class='checkbox' type='checkbox' value="${data['_id']}" />${data['task']}<i class='input-helper'></i></label></div> <input type="button" data-id="${data['_id']}" value="" class='remove mdi mdi-close-circle-outline'> </li>`);
+                todoListItem.append(`<li ${data['done'] ? 'class="completed"' : ''}> <div class='form-check'><label class='form-check-label'><input class='checkbox' type='checkbox' ${data['done'] ? 'checked=""' : ''} value="${data['_id']}" />${data['task']}<i class='input-helper'></i></label></div> <input type="button" data-id="${data['_id']}" value="" class='remove mdi mdi-close-circle-outline'> </li>`);
             }
             }})
 
@@ -53,7 +53,6 @@
         var item = $(this).prevAll('.todo-list-input').val();
 
         $.ajax({ type: 'POST', url: '/api/todos', data: {'task': item}, success: function(data) {
-            console.log(data);
             todoListItem.append(`<li> <div class='form-check'><label class='form-check-label'><input class='checkbox' type='checkbox' value="${data['data']['_id']}" />${data['data']['task']}<i class='input-helper'></i></label></div> <input type="button" data-id="${data['data']['_id']}" value="" class='remove mdi mdi-close-circle-outline'> </li>`);
         todoListInput.val("");
             }, dataType: 'json'})
