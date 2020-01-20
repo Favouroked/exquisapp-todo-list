@@ -3,8 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <title>Your Todos</title>
+    <link href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css'>
+    <link href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.css'>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-<h1>Welcome to the todo's page, see all your todos here</h1>
+<div class="page-content page-container" id="page-content">
+    <div class="padding">
+        <div class="row container d-flex justify-content-center">
+            <div class="col-lg-12">
+                <div class="card px-3">
+                    <div class="card-body">
+                        <h4 class="card-title">Todo list</h4>
+                        <div class="add-items d-flex"><input type="text" class="form-control todo-list-input"
+                                                             placeholder="What do you need to do today?">
+                            <button class="add btn btn-primary font-weight-bold todo-list-add-btn">Add</button>
+                        </div>
+                        <div class="list-wrapper">
+                            <ul class="d-flex flex-column-reverse todo-list">
+
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
+<script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js'></script>
+<script>
+    (function($) {
+        'use strict';
+        $(function() {
+        var todoListItem = $('.todo-list');
+        $.ajax({type: 'GET', url: '/api/todos', success: function(result) {
+            console.log(result);
+            var tasks = result['data'];
+            for (let data of tasks) {
+                todoListItem.append(`<li ${data['done'] ? 'class="completed"' : ''}> <div class='form-check'><label class='form-check-label'><input class='checkbox' type='checkbox' ${data['done'] ? 'checked=""' : ''} value="${data['_id']}" />${data['task']}<i class='input-helper'></i></label></div> <input type="button" data-id="${data['_id']}" value="" class='remove mdi mdi-close-circle-outline'> </li>`);
+            }
+            }})
+
+
+        var todoListInput = $('.todo-list-input');
+        $('.todo-list-add-btn').on("click", function(event) {
+        event.preventDefault();
+
+        var item = $(this).prevAll('.todo-list-input').val();
+
+        $.ajax({ type: 'POST', url: '/api/todos', data: {'task': item}, success: function(data) {
+            todoListItem.append(`<li> <div class='form-check'><label class='form-check-label'><input class='checkbox' type='checkbox' value="${data['data']['_id']}" />${data['data']['task']}<i class='input-helper'></i></label></div> <input type="button" data-id="${data['data']['_id']}" value="" class='remove mdi mdi-close-circle-outline'> </li>`);
+        todoListInput.val("");
+            }, dataType: 'json'})
+
+
+        });
+
+        todoListItem.on('change', '.checkbox', function(e) {
+            var id = e.target.value;
+        if ($(this).attr('checked')) {
+            $.ajax({type: 'PUT', url: `/api/todos/${id}`, data: {'done': false}, dataType: 'json', success: function(data) {
+                $(this).removeAttr('checked')
+                } });
+        } else {
+            $.ajax({type: 'PUT', url: `/api/todos/${id}`, data: {'done': true}, dataType: 'json', success: function(data) {
+                $(this).attr('checked', 'checked');
+                } });
+        }
+
+        $(this).closest("li").toggleClass('completed');
+
+        });
+
+        todoListItem.on('click', '.remove', function(e) {
+            var id = e.target.dataset.id;
+            $.ajax({type: 'DELETE', url: `/api/todos/${id}`, success: function(data) {
+
+                } });
+            $(this).parent().remove();
+
+        });
+
+        });
+    })(jQuery);
+</script>
 </body>
 </html>
