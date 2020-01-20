@@ -4,7 +4,7 @@ from datetime import datetime
 from utils.api import response, error_response, validate_body
 from services.todo import create_todo, get_todos, update_todo, delete_todo
 
-todo_api = Blueprint('todo', __name__)
+todo_api = Blueprint('todo_api', __name__)
 
 
 @todo_api.route('/', methods=['POST'])
