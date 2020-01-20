@@ -15,10 +15,9 @@
                 <div class="card px-3">
                     <div class="card-body">
                         <h4 class="card-title">Todo list</h4>
-                        <div class="add-items d-flex">
-                            <form action="/api/todos" method="post"><input type="text" class="form-control todo-list-input"
-                                                             placeholder="What do you need to do today?" name="task">
-                            <button class="btn btn-primary">Add</button></form>
+                        <div class="add-items d-flex"><input type="text" class="form-control todo-list-input"
+                                                             placeholder="What do you need to do today?">
+                            <button class="add btn btn-primary font-weight-bold todo-list-add-btn">Add</button>
                         </div>
                         <div class="list-wrapper">
                             <ul class="d-flex flex-column-reverse todo-list">
@@ -46,5 +45,44 @@
 </div>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
 <script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js'></script>
+<script>
+    (function($) {
+        'use strict';
+        $(function() {
+        var todoListItem = $('.todo-list');
+        var todoListInput = $('.todo-list-input');
+        $('.todo-list-add-btn').on("click", function(event) {
+        event.preventDefault();
+
+        var item = $(this).prevAll('.todo-list-input').val();
+
+        $.ajax({ type: 'POST', url: '/api/todos', data: {'task': item}, success: function(data) {
+            console.log(data);
+            todoListItem.append(`<li> <div class='form-check'><label class='form-check-label'><input class='checkbox' type='checkbox' />${data['data']['task']}<i class='input-helper'></i></label></div><i class='remove mdi mdi-close-circle-outline'></i> </li>`);
+        todoListInput.val("");
+            }, dataType: 'json'})
+
+
+        });
+
+        todoListItem.on('change', '.checkbox', function() {
+        if ($(this).attr('checked')) {
+
+        $(this).removeAttr('checked');
+        } else {
+        $(this).attr('checked', 'checked');
+        }
+
+        $(this).closest("li").toggleClass('completed');
+
+        });
+
+        todoListItem.on('click', '.remove', function() {
+        $(this).parent().remove();
+        });
+
+        });
+    })(jQuery);
+</script>
 </body>
 </html>

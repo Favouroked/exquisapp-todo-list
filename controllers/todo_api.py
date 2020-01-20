@@ -9,7 +9,7 @@ todo_api = Blueprint('todo_api', __name__)
 
 @todo_api.route('/', methods=['POST'])
 def create():
-    body = request.get_json()
+    body = {'task': request.form['task']}
     status, missing_field = validate_body(body, ['task'])
     if not status:
         return error_response(f'{missing_field} is required')
